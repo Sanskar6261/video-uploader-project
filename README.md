@@ -1,7 +1,4 @@
-Perfect! Based on your **project structure** (`client` and `server` folders) and your **.env setup**, here’s a proper README.md tailored for your project:
-
-```markdown
-# Task Project
+# video-uploader-project
 
 A full-stack project with a **Vite-based client** and a **Node.js/Express server**.
 
@@ -11,9 +8,9 @@ A full-stack project with a **Vite-based client** and a **Node.js/Express server
 - **Server:** Node.js, Express, MongoDB, npm
 
 ## Project Structure
-```
+```bash
 
-task-project/
+video-uploader-project/
 ├─ client/ # Frontend
 │ ├─ index.html
 │ ├─ package.json
@@ -35,7 +32,7 @@ task-project/
 ### 1. Clone the repository
 ```bash
 git clone <your-repo-url>
-cd task-project
+cd ./video-uploader-project
 ````
 
 ### 2. Setup Client
@@ -107,11 +104,3 @@ npm start
 
 This project is licensed under the MIT License.
 
-```
-
----
-
-If you want, I can also make a **super concise “quick start” README** that’s just 1–2 minutes to read for new developers, keeping both **client and server setup clear and minimal**.
-
-Do you want me to create that version too?
-```
