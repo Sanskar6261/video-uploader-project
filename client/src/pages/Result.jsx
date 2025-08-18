@@ -3,15 +3,16 @@ import { useUpload } from "../context/UploadContext";
 import api, { API_BASE } from "../api";
 
 export default function Result() {
-  // Guard if context missing (prevents crash → blank page)
   let uploaded, setUploaded;
   try {
     ({ uploaded, setUploaded } = useUpload());
   } catch {
     return (
-      <div className="page">
-        <h1>Screen 3: Uploaded Files</h1>
-        <p style={{ color: "crimson" }}>
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-4 text-center">
+          Screen 3: Uploaded Files
+        </h1>
+        <p className="text-red-600 text-center">
           UploadProvider is not mounted. Wrap your app with
           &lt;UploadProvider&gt;.
         </p>
@@ -57,50 +58,64 @@ export default function Result() {
     : null;
 
   return (
-    <div className="page">
-      <h1>Screen 3: Uploaded Files</h1>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
+      <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">
+        Screen 3: Uploaded Files
+      </h1>
 
-      {err && <p style={{ color: "crimson", marginTop: 8 }}>{err}</p>}
+      {err && <p className="text-red-600 font-medium mb-4">{err}</p>}
 
       {currentUrl ? (
-        <>
-          <h3>Just uploaded</h3>
-          <video src={currentUrl} controls width="640" />
-          <div style={{ marginTop: 8 }}>
-            <button onClick={() => handleDelete(uploaded.filename)}>
+        <div className="w-full max-w-2xl mb-6">
+          <h3 className="text-xl font-semibold mb-2">Just uploaded</h3>
+          <video
+            src={currentUrl}
+            controls
+            className="w-full rounded-lg shadow-md"
+          />
+          <div className="mt-2">
+            <button
+              onClick={() => handleDelete(uploaded.filename)}
+              className="px-4 py-2 mt-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            >
               Delete
             </button>
           </div>
-        </>
+        </div>
       ) : (
         <p>No recent upload in this session.</p>
       )}
 
-      <h3 style={{ marginTop: 24 }}>All files on server</h3>
-
+      <h3 className="text-xl font-semibold mt-8 mb-2">All files on server</h3>
       {loading && <p>Loading…</p>}
       {!loading && list.length === 0 && <p>None yet.</p>}
 
       {!loading && list.length > 0 && (
-        <ul>
+        <ul className="w-full max-w-2xl space-y-4">
           {list.map((f) => {
             const url = `${API_BASE}/video/${encodeURIComponent(f.filename)}`;
             return (
-              <li key={f.filename} style={{ marginBottom: 12 }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <a href={url} target="_blank" rel="noreferrer">
+              <li
+                key={f.filename}
+                className="p-4 bg-white rounded-lg shadow-md"
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-2">
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-blue-600 hover:underline"
+                  >
                     {f.filename}
                   </a>
-                  <button onClick={() => handleDelete(f.filename)}>
+                  <button
+                    onClick={() => handleDelete(f.filename)}
+                    className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                  >
                     Delete
                   </button>
                 </div>
-                <video
-                  src={url}
-                  controls
-                  width="480"
-                  style={{ display: "block", marginTop: 6 }}
-                />
+                <video src={url} controls className="w-full rounded-md" />
               </li>
             );
           })}
