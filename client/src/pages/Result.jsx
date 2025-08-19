@@ -13,6 +13,13 @@ const fmtBytes = (n) => {
   }
   return `${n.toFixed(i ? 1 : 0)} ${u[i]}`;
 };
+const formatDuration = (secLike) => {
+  const s = Number(secLike);
+  if (!Number.isFinite(s) || s < 0) return null;
+  if (s < 60) return `${Math.round(s)} sec`;
+  const mins = s / 60;
+  return `${mins.toFixed(1)} min`;
+};
 
 export default function Result() {
   let uploaded, setUploaded;
@@ -75,6 +82,7 @@ export default function Result() {
   };
   const { state } = useLocation();
   const latestUploadTimeSec = state?.uploadTime ?? uploaded?.uploadTime ?? null;
+  const latestUploadTimeLabel = formatDuration(latestUploadTimeSec);
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">
@@ -95,10 +103,9 @@ export default function Result() {
         <div className="w-full max-w-2xl mb-6 bg-white rounded-lg shadow-md p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xl font-semibold">Just uploaded</h3>
-
-            {Number.isFinite(latestUploadTimeSec) && (
+            {latestUploadTimeLabel && (
               <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded shadow">
-                Uploaded in : {latestUploadTimeSec} sec
+                Uploaded in : {latestUploadTimeLabel}
               </span>
             )}
           </div>
