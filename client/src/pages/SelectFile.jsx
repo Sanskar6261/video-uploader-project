@@ -56,6 +56,9 @@ export default function SelectFile() {
 
   const disabled = isUploading || didStartRef.current;
 
+  const handleGoToListing = () => {
+    navigate("/done");
+  };
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
@@ -105,6 +108,13 @@ export default function SelectFile() {
             }`}
         >
           {disabled ? "Uploading..." : "Upload"}
+        </button>
+        <button
+          type="button"
+          onClick={handleGoToListing}
+          className={`mt-2 mb-4 px-6 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out focus:ring-opacity-7 bg-gray-400 cursor-not-allowed`}
+        >
+          All Videos
         </button>
       </div>
     </div>

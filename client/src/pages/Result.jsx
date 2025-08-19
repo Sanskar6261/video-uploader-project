@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUpload } from "../context/UploadContext";
 import api, { API_BASE } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const fmtBytes = (n) => {
   if (!Number.isFinite(n)) return "-";
@@ -68,11 +69,23 @@ export default function Result() {
     ? `${API_BASE}/video/${encodeURIComponent(uploaded.filename)}`
     : null;
 
+  const navigate = useNavigate();
+  const handleGoToHome = () => {
+    navigate("/");
+  };
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">
         Screen 3: Uploaded Files
       </h1>
+
+      <button
+        type="button"
+        onClick={handleGoToHome}
+        className={`mt-2 mb-4 px-6 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out focus:ring-opacity-7 bg-gray-400 cursor-not-allowed`}
+      >
+        Back
+      </button>
 
       {err && <p className="text-red-600 font-medium mb-4">{err}</p>}
 
