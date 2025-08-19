@@ -1,4 +1,3 @@
-// Progress.jsx
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUpload } from "../context/UploadContext";
@@ -32,14 +31,15 @@ export default function Progress() {
   const [pct, setPct] = useState(0);
   const [err, setErr] = useState("");
   const [eta, setEta] = useState(null);
-  const [speed, setSpeed] = useState(null); // NEW
+  const [speed, setSpeed] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const [phase, setPhase] = useState("uploading");
+
   const startRef = useRef(null);
+  const uploadEndRef = useRef(null);
   const speedSamples = useRef([]);
   const finalizeTimer = useRef(null);
 
-  // countdown while uploading
   useEffect(() => {
     if (phase !== "uploading") return;
     if (eta == null) return;
@@ -50,7 +50,6 @@ export default function Progress() {
     return () => clearInterval(id);
   }, [eta, phase]);
 
-  // gentle creep during finalizing
   useEffect(() => {
     if (phase !== "finalizing") return;
     finalizeTimer.current = setInterval(() => {
@@ -71,6 +70,7 @@ export default function Progress() {
       setCountdown(null);
       setPhase("uploading");
       startRef.current = Date.now();
+      uploadEndRef.current = null;
       speedSamples.current = [];
 
       try {
@@ -87,12 +87,8 @@ export default function Progress() {
               const now = Date.now();
               const elapsedSec = (now - startRef.current) / 1000;
               const { loaded, total } = e;
-
-              // progress (cap at 98)
               const progress = Math.min(98, Math.round((loaded / total) * 100));
               setPct(progress);
-
-              // moving-average speed
               const inst = loaded / Math.max(elapsedSec, 0.001);
               speedSamples.current.push(inst);
               if (speedSamples.current.length > 10)
@@ -100,27 +96,33 @@ export default function Progress() {
               const avgSpeed =
                 speedSamples.current.reduce((a, b) => a + b, 0) /
                 speedSamples.current.length;
-              setSpeed(avgSpeed); // NEW
+              setSpeed(avgSpeed);
 
-              // ETA
               const remainingBytes = total - loaded;
               const etaSec = remainingBytes / Math.max(avgSpeed, 1);
               setEta(etaSec);
 
-              // switch to finalizing when bytes finished
-              if (loaded === total) {
+              if (loaded === total && !uploadEndRef.current) {
+                uploadEndRef.current = Date.now();
                 setPhase("finalizing");
                 setPct((p) => Math.max(p, 99));
               }
             },
           })
           .then((res) => {
-            setUploaded(res.data);
+            const endMs = uploadEndRef.current ?? Date.now();
+            const elapsedSec = Math.max(
+              0,
+              Math.round((endMs - startRef.current) / 1000)
+            );
+
+            setUploaded({ ...res.data, uploadTime: elapsedSec });
+
             setPhase("done");
             setPct(100);
-          });
 
-        navigate("/done");
+            navigate("/done", { state: { uploadTime: elapsedSec } });
+          });
       } catch (e) {
         console.error(e);
         setPhase("error");
@@ -148,8 +150,6 @@ export default function Progress() {
       <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
         Screen 2: {phase === "finalizing" ? "Finalizing…" : "Uploading…"}
       </h1>
-
-      {/* Stats card */}
       {file && (
         <div className="w-full max-w-xl mb-4 bg-white/80 rounded-lg p-4 shadow">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">

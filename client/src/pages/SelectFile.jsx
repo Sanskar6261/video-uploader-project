@@ -20,7 +20,7 @@ export default function SelectFile() {
 
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [preview, setPreview] = useState(null); // {name,size}
+  const [preview, setPreview] = useState(null); 
 
   const didStartRef = useRef(false);
 

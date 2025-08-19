@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUpload } from "../context/UploadContext";
 import api, { API_BASE } from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const fmtBytes = (n) => {
   if (!Number.isFinite(n)) return "-";
@@ -73,6 +73,8 @@ export default function Result() {
   const handleGoToHome = () => {
     navigate("/");
   };
+  const { state } = useLocation();
+  const latestUploadTimeSec = state?.uploadTime ?? uploaded?.uploadTime ?? null;
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-purple-200 p-6">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">
@@ -82,7 +84,7 @@ export default function Result() {
       <button
         type="button"
         onClick={handleGoToHome}
-        className={`mt-2 mb-4 px-6 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out focus:ring-opacity-7 bg-gray-400 cursor-not-allowed`}
+        className="mt-2 mb-4 px-6 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out focus:ring-opacity-7 bg-gray-400 cursor-not-allowed"
       >
         Back
       </button>
@@ -91,7 +93,15 @@ export default function Result() {
 
       {currentUrl ? (
         <div className="w-full max-w-2xl mb-6 bg-white rounded-lg shadow-md p-4">
-          <h3 className="text-xl font-semibold mb-3">Just uploaded</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-semibold">Just uploaded</h3>
+
+            {Number.isFinite(latestUploadTimeSec) && (
+              <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded shadow">
+                Uploaded in : {latestUploadTimeSec} sec
+              </span>
+            )}
+          </div>
 
           <div className="text-sm text-gray-700 mb-2">
             <div>
@@ -106,7 +116,7 @@ export default function Result() {
           </div>
 
           <video src={currentUrl} controls className="w-full rounded-lg" />
-          <div className="mt-3">
+          <div className="mt-3 flex justify-end">
             <button
               onClick={() => handleDelete(uploaded.filename)}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
