@@ -13,7 +13,7 @@ const fmtBytes = (n) => {
   return `${n.toFixed(i ? 1 : 0)} ${u[i]}`;
 };
 
-const MIN_SIZE = 10 * 1024 * 1024;
+const MIN_SIZE = 2 * 1024 * 1024;
 const MAX_SIZE = 500 * 1024 * 1024;
 
 const isVideoTypeAllowed = (file) => {
@@ -62,7 +62,7 @@ export default function SelectFile() {
     if (!isVideoTypeAllowed(file))
       return "Only MP4 or WebM video files are allowed.";
     if (file.size < MIN_SIZE || file.size > MAX_SIZE)
-      return "Please select/record a video between 10–500 MB.";
+      return "Please select/record a video between 2–500 MB.";
     return "";
   };
 
@@ -212,7 +212,7 @@ function RecorderModal({ onClose, onSave, validateBeforeSave }) {
       "video/webm;codecs=vp9,opus",
       "video/webm;codecs=vp8,opus",
       "video/webm",
-      "video/mov"
+      "video/mov",
     ];
     for (const c of cands) {
       try {
