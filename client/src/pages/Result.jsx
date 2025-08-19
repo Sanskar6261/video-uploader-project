@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { useUpload } from "../context/UploadContext";
 import api, { API_BASE } from "../api";
 
+const fmtBytes = (n) => {
+  if (!Number.isFinite(n)) return "-";
+  const u = ["B", "KB", "MB", "GB", "TB"];
+  let i = 0;
+  while (n >= 1024 && i < u.length - 1) {
+    n /= 1024;
+    i++;
+  }
+  return `${n.toFixed(i ? 1 : 0)} ${u[i]}`;
+};
+
 export default function Result() {
   let uploaded, setUploaded;
   try {
@@ -66,17 +77,26 @@ export default function Result() {
       {err && <p className="text-red-600 font-medium mb-4">{err}</p>}
 
       {currentUrl ? (
-        <div className="w-full max-w-2xl mb-6">
-          <h3 className="text-xl font-semibold mb-2">Just uploaded</h3>
-          <video
-            src={currentUrl}
-            controls
-            className="w-full rounded-lg shadow-md"
-          />
-          <div className="mt-2">
+        <div className="w-full max-w-2xl mb-6 bg-white rounded-lg shadow-md p-4">
+          <h3 className="text-xl font-semibold mb-3">Just uploaded</h3>
+
+          <div className="text-sm text-gray-700 mb-2">
+            <div>
+              <span className="font-medium">File:</span> {uploaded.filename}
+            </div>
+            {typeof uploaded.size === "number" && (
+              <div>
+                <span className="font-medium">Size:</span>{" "}
+                {fmtBytes(uploaded.size)}
+              </div>
+            )}
+          </div>
+
+          <video src={currentUrl} controls className="w-full rounded-lg" />
+          <div className="mt-3">
             <button
               onClick={() => handleDelete(uploaded.filename)}
-              className="px-4 py-2 mt-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
             >
               Delete
             </button>
@@ -94,23 +114,34 @@ export default function Result() {
         <ul className="w-full max-w-2xl space-y-4">
           {list.map((f) => {
             const url = `${API_BASE}/video/${encodeURIComponent(f.filename)}`;
+            const displayName =
+              f.originalname || f.filename.replace(/^\d+_/, "");
             return (
               <li
                 key={f.filename}
                 className="p-4 bg-white rounded-lg shadow-md"
               >
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-2">
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    {f.filename}
-                  </a>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                  <div className="text-sm text-gray-700">
+                    <div className="font-medium break-all">
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {displayName}
+                      </a>
+                    </div>
+                    {typeof f.size === "number" && (
+                      <div className="text-gray-600">
+                        Size: {fmtBytes(f.size)}
+                      </div>
+                    )}
+                  </div>
                   <button
                     onClick={() => handleDelete(f.filename)}
-                    className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                    className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition self-start sm:self-auto"
                   >
                     Delete
                   </button>
