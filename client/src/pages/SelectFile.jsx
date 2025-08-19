@@ -62,7 +62,7 @@ export default function SelectFile() {
     if (!isVideoTypeAllowed(file))
       return "Only MP4 or WebM video files are allowed.";
     if (file.size < MIN_SIZE || file.size > MAX_SIZE)
-      return "Please select/record a video between 2–500 MB.";
+      return "Please select/record a video between 2–500 MB.  ";
     return "";
   };
 
