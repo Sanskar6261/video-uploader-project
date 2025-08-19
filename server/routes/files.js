@@ -38,7 +38,9 @@ router.post("/upload", (req, res) => {
     }
     const { file } = req;
     if (!file) return res.status(400).json({ error: "No file uploaded." });
-    if (file.size < 10 * 1024 * 1024)
+
+    
+    if (file.size < 2 * 1024 * 1024)
       return res.status(400).json({ error: "File must be at least 10 MB." });
 
     try {
